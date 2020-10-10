@@ -4,10 +4,7 @@ info:
   title: "AirAsia Backend Assignment"
   contact:
     email: "i.ruhaizad@gmail.com"
-  license:
-    name: "Apache 2.0"
-    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
-host: "localhost:3000"
+host: "airasia-asgnmnt.herokuapp.com"
 basePath: "/api"
 tags:
   - name: "user"
@@ -22,7 +19,6 @@ tags:
     description: "Access to payment"
 schemes:
   - "https"
-  - "http"
 paths:
   /users/register:
     post:
