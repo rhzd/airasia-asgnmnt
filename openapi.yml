@@ -1,0 +1,605 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "AirAsia Backend Assignment"
+  contact:
+    email: "i.ruhaizad@gmail.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "localhost:3000"
+basePath: "/api"
+tags:
+  - name: "user"
+    description: "Access to user"
+  - name: "hotel"
+    description: "Access to hotel"
+  - name: "room"
+    description: "Access to room"
+  - name: "order"
+    description: "Access to order"
+  - name: "payment"
+    description: "Access to payment"
+schemes:
+  - "https"
+  - "http"
+paths:
+  /users/register:
+    post:
+      tags:
+        - "user"
+      summary: "Create user"
+      description: "For user registration"
+      consumes:
+        - "application/x-www-form-urlencoded"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "formData"
+          name: "name"
+          type: "string"
+          required: true
+        - in: "formData"
+          name: "email"
+          type: "string"
+          required: true
+        - in: "formData"
+          name: "phone_no"
+          type: "string"
+          description: "Phone number"
+          required: true
+        - in: "formData"
+          name: "password"
+          type: "string"
+          required: true
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+  /users/authenticate:
+    post:
+      tags:
+        - "user"
+      summary: "Get token"
+      description: "Token generator"
+      consumes:
+        - "application/x-www-form-urlencoded"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "formData"
+          name: "email"
+          type: "string"
+          required: true
+        - in: "formData"
+          name: "password"
+          type: "string"
+          required: true
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+              data:
+                type: "object"
+                properties:
+                  user:
+                    $ref: "#/definitions/User"
+                  token:
+                    type: "string"
+  /hotels:
+    get:
+      tags:
+        - "hotel"
+      summary: "Get all hotel"
+      consumes:
+        - "application/x-www-form-urlencoded"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+          description: "Bearer token"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+              data:
+                type: "array"
+                items:
+                  $ref: "#/definitions/Hotel"
+    post:
+      tags:
+        - "hotel"
+      summary: "Add hotel"
+      consumes:
+        - "application/x-www-form-urlencoded"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+          description: "Bearer token"
+        - in: "formData"
+          name: "name"
+          type: "string"
+          required: true
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+  /hotels/{hotelId}:
+    get:
+      tags:
+        - "hotel"
+      summary: "Get hotel by ID"
+      consumes:
+        - "application/x-www-form-urlencoded"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+          description: "Bearer token"
+        - name: "hotelId"
+          in: "path"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+              data:
+                $ref: "#/definitions/Hotel"
+    put:
+      tags:
+        - "hotel"
+      summary: "Edit hotel"
+      consumes:
+        - "application/x-www-form-urlencoded"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+          description: "Bearer token"
+        - name: "hotelId"
+          in: "path"
+          required: true
+          type: "string"
+        - in: "formData"
+          name: "name"
+          type: "string"
+          required: false
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+    delete:
+      tags:
+        - "hotel"
+      summary: "Delete hotel"
+      consumes:
+        - "application/x-www-form-urlencoded"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+          description: "Bearer token"
+        - name: "hotelId"
+          in: "path"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+  /hotels/{hotelId}/rooms:
+    get:
+      tags:
+        - "room"
+      summary: "Get hotel room"
+      consumes:
+        - "application/x-www-form-urlencoded"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+          description: "Bearer token"
+        - name: "hotelId"
+          in: "path"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+              data:
+                type: "array"
+                items:
+                  $ref: "#/definitions/Room"
+    post:
+      tags:
+        - "room"
+      summary: "Create hotel room"
+      consumes:
+        - "application/x-www-form-urlencoded"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+          description: "Bearer token"
+        - name: "hotelId"
+          in: "path"
+          required: true
+          type: "string"
+        - in: "formData"
+          name: "unit"
+          type: "string"
+          description: "Room number or unit"
+          required: true
+        - in: "formData"
+          name: "no_of_guest"
+          type: "number"
+          description: "Max number of guest for the room"
+          required: true
+        - in: "formData"
+          name: "price"
+          type: "string"
+          required: true
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+  /hotels/{hotelId}/rooms/{roomId}:
+    get:
+      tags:
+        - "room"
+      summary: "Get hotel room by ID"
+      consumes:
+        - "application/x-www-form-urlencoded"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+          description: "Bearer token"
+        - name: "hotelId"
+          in: "path"
+          required: true
+          type: "string"
+        - name: "roomId"
+          in: "path"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+              data:
+                $ref: "#/definitions/Room"
+    put:
+      tags:
+        - "room"
+      summary: "Edit hotel room"
+      consumes:
+        - "application/x-www-form-urlencoded"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+          description: "Bearer token"
+        - name: "hotelId"
+          in: "path"
+          required: true
+          type: "string"
+        - name: "roomId"
+          in: "path"
+          required: true
+          type: "string"
+        - in: "formData"
+          name: "no_of_guest"
+          type: "number"
+          description: "Max number of guest for the room"
+          required: false
+        - in: "formData"
+          name: "price"
+          type: "string"
+          required: false
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+    delete:
+      tags:
+        - "room"
+      summary: "Delete hotel room"
+      consumes:
+        - "application/x-www-form-urlencoded"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+          description: "Bearer token"
+        - name: "hotelId"
+          in: "path"
+          required: true
+          type: "string"
+        - name: "roomId"
+          in: "path"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+  /orders:
+    get:
+      tags:
+        - "order"
+      summary: "Get hotel room order"
+      consumes:
+        - "application/x-www-form-urlencoded"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+          description: "Bearer token"
+        - name: "hotelName"
+          in: "query"
+          required: false
+          type: "string"
+          description: "Search + Filter with Hotel Name"
+        - name: "customer"
+          in: "query"
+          required: false
+          type: "string"
+          description: "Search + Filter with Customer Details (Name, Email, Phone Number)"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+              data:
+                type: "array"
+                items:
+                  $ref: "#/definitions/Order"
+  /hotels/{hotelId}/rooms/{roomId}/orders:
+    post:
+      tags:
+        - "order"
+      summary: "Order hotel room"
+      consumes:
+        - "application/x-www-form-urlencoded"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+          description: "Bearer token"
+        - name: "hotelId"
+          in: "path"
+          required: true
+          type: "string"
+        - name: "roomId"
+          in: "path"
+          required: true
+          type: "string"
+        - name: "checkin_date"
+          in: "formData"
+          required: true
+          type: "string"
+          description: "Check-in date"
+        - name: "checkout_date"
+          in: "formData"
+          required: true
+          type: "string"
+          description: "Check-out date"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+  /payment/{paymentId}/status:
+    get:
+      tags:
+        - "payment"
+      summary: "Get payment status"
+      consumes:
+        - "application/x-www-form-urlencoded"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+          description: "Bearer token"
+        - name: "paymentId"
+          in: "path"
+          required: true
+          type: "string"
+          description: "Get from order API"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "string"
+  /payment/{paymentId}/pay:
+    put:
+      tags:
+        - "payment"
+      summary: "Make payment"
+      consumes:
+        - "application/x-www-form-urlencoded"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          type: "string"
+          description: "Bearer token"
+        - name: "paymentId"
+          in: "path"
+          required: true
+          type: "string"
+          description: "Get from order API"
+        - name: "name_on_card"
+          in: "formData"
+          required: true
+          type: "string"
+          description: "Name on credit card"
+        - name: "credit_card_no"
+          in: "formData"
+          required: true
+          type: "string"
+          description: "Credit card number"
+        - name: "expire_date"
+          in: "formData"
+          required: true
+          type: "string"
+          description: "Credit card expired date"
+        - name: "cvv_no"
+          in: "formData"
+          required: true
+          type: "string"
+          description: "Credit card CVV number"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+definitions:
+  User:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      email:
+        type: "string"
+      phone_no:
+        type: "string"
+      password:
+        type: "string"
+  Hotel:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      is_deleted:
+        type: "boolean"
+  Room:
+    type: "object"
+    properties:
+      unit:
+        type: "string"
+      hotel:
+        $ref: "#/definitions/Hotel"
+      no_of_guest:
+        type: "number"
+      price:
+        type: "string"
+      is_deleted:
+        type: "boolean"
+  Order:
+    type: "object"
+    properties:
+      checkin_date:
+        type: "string"
+      checkout_date:
+        type: "string"
+      customer:
+        $ref: "#/definitions/User"
+      room:
+        $ref: "#/definitions/Room"
+      total_amount:
+        type: "string"
+      payment:
+        $ref: "#/definitions/Payment"
+      is_cancelled:
+        type: "boolean"
+  Payment:
+    type: "object"
+    properties:
+      status:
+        type: "string"
+        enum:
+          - "Open"
+          - "Paid"
+          - "Cancelled"
+      name_on_card:
+        type: "string"
+      credit_card_no:
+        type: "number"
+      expire_date:
+        type: "string"
+      cvv_no:
+        type: "number"
+  ApiResponse:
+    type: "object"
+    properties:
+      message:
+        type: "string"
