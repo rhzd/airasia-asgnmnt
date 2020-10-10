@@ -2,12 +2,11 @@
 
 This repository contains an example API for AirAsia recruitment assignment.
 
-## Preparation
+## Preparation for local env
 
 - Clone this repository
 - Make sure got yarn or npm installed (yarn is recommended)
 - Run 'yarn' or 'npm install'
-- Rename '.env.template' to '.env'
 
 ## How to use
 
