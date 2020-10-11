@@ -1,4 +1,10 @@
-const mongoose = require("mongoose"); //Define a schema
+// the system will store the hotel id instead of whole hotel object,
+// so that it will be easier to maintain each module rather than change each model for every data structure changes.
+
+// is_deleted is used so that the system dont have to delete the data,
+// it can be used for audit later.
+
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const RoomSchema = new Schema({
   unit: {

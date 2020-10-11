@@ -1,6 +1,7 @@
 const orderModel = require("../models/orders");
 const paymentModel = require("../models/payments");
 const roomModel = require("../models/rooms");
+const validation = require("../validations/orders");
 
 module.exports = {
   getById: function (req, res, next) {
@@ -63,34 +64,51 @@ module.exports = {
       }
     );
   },
-  create: function (req, res, next) {
-    paymentModel.create({ status: "Open" }, async function (err, resultPayment) {
-      if (err) {
-        next(err);
-      } else {
-        let roomCurrent = await roomModel.findById(req.params.roomId, 'price').exec();
-        orderModel.create(
-          {
-            checkin_date: req.body.checkin_date,
-            checkout_date: req.body.checkout_date,
-            customer: req.body.userId,
-            room: req.params.roomId,
-            total_amount: roomCurrent.price,
-            payment: resultPayment.id,
-            is_canceled: false,
-          },
-          function (err, resultOrder) {
-            if (err) {
-              paymentModel.findByIdAndDelete(resultPayment.id, function () {});
-              next(err);
-            } else {
-              res.json({
-                message: `Successfully book. Please make a payment to confirm`,
-              });
+  create: async function (req, res, next) {
+    let errorMsg = await validation.validOrder(
+      req.params.roomId,
+      req.body.checkin_date,
+      req.body.checkout_date
+    );
+    if (errorMsg) {
+      res.status(400).send(errorMsg);
+    } else {
+      paymentModel.create({ status: "Open" }, async function (
+        err,
+        resultPayment
+      ) {
+        if (err) {
+          next(err);
+        } else {
+          let roomCurrent = await roomModel
+            .findById(req.params.roomId, "price")
+            .exec();
+          orderModel.create(
+            {
+              checkin_date: req.body.checkin_date,
+              checkout_date: req.body.checkout_date,
+              customer: req.body.userId,
+              room: req.params.roomId,
+              total_amount: roomCurrent.price,
+              payment: resultPayment.id,
+              is_canceled: false,
+            },
+            function (err, resultOrder) {
+              if (err) {
+                paymentModel.findByIdAndDelete(
+                  resultPayment.id,
+                  function () {}
+                );
+                next(err);
+              } else {
+                res.json({
+                  message: `Successfully book. Please make a payment to confirm`,
+                });
+              }
             }
-          }
-        );
-      }
-    });
+          );
+        }
+      });
+    }
   },
 };

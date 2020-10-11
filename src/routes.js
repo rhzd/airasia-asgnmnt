@@ -1,10 +1,10 @@
 const { Router } = require("express");
-// const ProjectController = require("./app/controllers/ProjectController");
 const users = require("../src/routes/users");
 const hotels = require("../src/routes/hotels");
 const rooms = require("../src/routes/rooms");
 const orders = require("../src/routes/orders");
 const payments = require("../src/routes/payments");
+const { capitalize } = require("../src/app/utils");
 
 var jwt = require("jsonwebtoken");
 
@@ -44,7 +44,7 @@ function validateUser(req, res, next) {
     }
     jwt.verify(token, req.app.get("secretKey"), function (err, decoded) {
       if (err) {
-        res.json({ status: "error", message: err.message, data: null });
+        res.status(401).json({ message: capitalize(err.message) });
       } else {
         // add user id to request
         req.body.userId = decoded.id;
@@ -52,7 +52,7 @@ function validateUser(req, res, next) {
       }
     });
   } else {
-    res.status(500).json({ message: "Please login" });
+    res.status(401).json({ message: "Please login" });
   }
 }
 

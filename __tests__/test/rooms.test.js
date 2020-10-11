@@ -11,10 +11,10 @@ const roomData = {
 };
 
 describe("Room Model Test", () => {
-  it("create & save room successfully", async () => {
+  it("Create & save room successfully", async () => {
     const validRoom = new RoomModel(roomData);
     const savedRoom = await validRoom.save();
-    expect(savedRoom._id).toBeDefined(); // Object Id should be defined when successfully saved to MongoDB.
+    expect(savedRoom._id).toBeDefined();
     expect(savedRoom.unit).toBe(roomData.unit);
     expect(savedRoom.hotel.toString()).toBe(roomData.hotel);
     expect(savedRoom.no_of_guest).toBe(roomData.no_of_guest);
@@ -22,9 +22,7 @@ describe("Room Model Test", () => {
     expect(savedRoom.is_deleted).toBe(roomData.is_deleted);
   });
 
-  // Test Schema
-  // You shouldn't be able to add in any field that isn't defined in the schema
-  it("insert room successfully, but the field does not defined in schema should be undefined", async () => {
+  it("Insert room successfully, but the field that does not defined in schema should be undefined", async () => {
     const roomWithInvalidField = new RoomModel({
       unit: "A-01-2",
       hotel: hotelId.toString(),
@@ -38,9 +36,7 @@ describe("Room Model Test", () => {
     expect(savedRoomWithInvalidField.nickkname).toBeUndefined();
   });
 
-  // Test Validation
-  // It should us told us the errors in on is_deleted field.
-  it("create room without required field should failed", async () => {
+  it("Create room without required field should failed", async () => {
     const roomWithoutRequiredField = new RoomModel({
       unit: "A-01-2",
       hotel: hotelId.toString(),
