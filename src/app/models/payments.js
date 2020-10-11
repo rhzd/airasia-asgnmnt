@@ -1,4 +1,4 @@
-const mongoose = require("mongoose"); //Define a schema
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const PaymentSchema = new Schema({
   status: {

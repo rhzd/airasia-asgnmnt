@@ -1,23 +1,29 @@
 const userModel = require("../models/users");
+const validation = require("../validations/users");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 module.exports = {
-  create: function (req, res, next) {
-    userModel.create(
-      {
-        name: req.body.name,
-        email: req.body.email,
-        phone_no: req.body.phone_no,
-        password: req.body.password,
-      },
-      function (err, result) {
-        if (err) next(err);
-        else
-          res.json({
-            message: "User added successfully.",
-          });
-      }
-    );
+  create: async function (req, res, next) {
+    let errorMsg = await validation.validUser(req.body.email);
+    if (errorMsg) {
+      res.status(400).send(errorMsg);
+    } else {
+      userModel.create(
+        {
+          name: req.body.name,
+          email: req.body.email,
+          phone_no: req.body.phone_no,
+          password: req.body.password,
+        },
+        function (err, result) {
+          if (err) next(err);
+          else
+            res.json({
+              message: "User added successfully.",
+            });
+        }
+      );
+    }
   },
   authenticate: function (req, res, next) {
     userModel.findOne({ email: req.body.email }, function (err, userInfo) {

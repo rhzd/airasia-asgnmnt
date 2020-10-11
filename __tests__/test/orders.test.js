@@ -3,10 +3,11 @@ const OrderModel = require("../../src/app/models/orders");
 var paymentId = require("mongoose").Types.ObjectId();
 var roomId = require("mongoose").Types.ObjectId();
 var customerId = require("mongoose").Types.ObjectId();
+const validation = require("../../src/app/validations/orders");
 
 const orderData = {
-  checkin_date: '2020-06-21',
-  checkout_date: '2020-06-24',
+  checkin_date: "2020-06-21",
+  checkout_date: "2020-06-26",
   customer: customerId.toString(),
   room: roomId.toString(),
   total_amount: "58.50",
@@ -15,12 +16,16 @@ const orderData = {
 };
 
 describe("Orders Model Test", () => {
-  it("create & save order successfully", async () => {
+  it("Create & save order successfully", async () => {
     const validOrder = new OrderModel(orderData);
     const savedOrder = await validOrder.save();
-    expect(savedOrder._id).toBeDefined(); // Object Id should be defined when successfully saved to MongoDB.
-    expect(new Date(savedOrder.checkin_date).toISOString()).toBe(new Date(orderData.checkin_date).toISOString());
-    expect(new Date(savedOrder.checkout_date).toISOString()).toBe(new Date(orderData.checkout_date).toISOString());
+    expect(savedOrder._id).toBeDefined();
+    expect(new Date(savedOrder.checkin_date).toISOString()).toBe(
+      new Date(orderData.checkin_date).toISOString()
+    );
+    expect(new Date(savedOrder.checkout_date).toISOString()).toBe(
+      new Date(orderData.checkout_date).toISOString()
+    );
     expect(savedOrder.customer.toString()).toBe(orderData.customer);
     expect(savedOrder.room.toString()).toBe(orderData.room);
     expect(savedOrder.total_amount).toBe(orderData.total_amount);
@@ -28,11 +33,10 @@ describe("Orders Model Test", () => {
     expect(savedOrder.is_canceled).toBe(orderData.is_canceled);
   });
 
-  // You shouldn't be able to add in any field that isn't defined in the schema
-  it("insert order successfully, but the field does not defined in schema should be undefined", async () => {
+    it("insert order successfully, but the field that does not defined in schema should be undefined", async () => {
     const orderWithInvalidField = new OrderModel({
-      checkin_date: Date.now(),
-      checkout_date: Date.now() + 1,
+      checkin_date: "2020-06-21",
+      checkout_date: "2020-06-26",
       customer: customerId.toString(),
       room: roomId.toString(),
       total_amount: "58.50",
@@ -40,16 +44,15 @@ describe("Orders Model Test", () => {
       is_canceled: false,
       nickkname: "unit",
     });
-    const savedOrderWithInvalidField = await orderWithInvalidField.save();
-    expect(savedOrderWithInvalidField._id).toBeDefined();
-    expect(savedOrderWithInvalidField.nickkname).toBeUndefined();
+    const savedPaymentWithInvalidField = await orderWithInvalidField.save();
+    expect(savedPaymentWithInvalidField._id).toBeDefined();
+    expect(savedPaymentWithInvalidField.nickkname).toBeUndefined();
   });
 
-  // It should told us the errors in on is_cancelled field.
-  it("create order without required field should failed", async () => {
+  it("Create order without required field should failed", async () => {
     const orderWithoutRequiredField = new OrderModel({
       checkin_date: Date.now(),
-      checkout_date: Date.now() + 1,
+      checkout_date: Date.now(),
       customer: customerId.toString(),
       room: roomId.toString(),
       total_amount: "58.50",
@@ -64,5 +67,25 @@ describe("Orders Model Test", () => {
     }
     expect(err).toBeInstanceOf(mongoose.Error.ValidationError);
     expect(err.errors.is_canceled).toBeDefined();
+  });
+
+  it("Should return error message if check-in is larger than check-out", async () => {
+    let errorMsg = await validation.validOrder(
+      roomId.toString(),
+      "2020-06-26",
+      "2020-06-24"
+    );
+    expect(errorMsg.error).toBe(
+      "Check-out date should be higher than check-in date"
+    );
+  });
+
+  it("Should return error message if date is not available", async () => {
+    let errorMsg = await validation.validOrder(
+      roomId.toString(),
+      "2020-06-19",
+      "2020-06-22"
+    );
+    expect(errorMsg.error).toBe("Room not available on selected date");
   });
 });

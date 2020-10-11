@@ -1,4 +1,10 @@
-const mongoose = require("mongoose"); //Define a schema
+// the system will store the id for most part,
+// so that it will be easier to maintain other module rather than change each model for every data structure changes.
+
+// is_cancelled is used so that the system dont have to delete the data,
+// it can be used for audit later.
+
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const OrderSchema = new Schema({
   checkin_date: {
